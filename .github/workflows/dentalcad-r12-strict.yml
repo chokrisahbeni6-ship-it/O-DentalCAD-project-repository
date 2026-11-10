@@ -1,0 +1,73 @@
+name: DentalCAD R12 Strict Synthetic Validation
+
+on:
+  push:
+    branches:
+      - r12-audit-import-2026-11-10
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  strict-docker-campaign:
+    name: R12 isolated strict campaign
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify Docker Compose
+        working-directory: dentalcad_v1.7.9_work
+        run: |
+          docker --version
+          docker compose version
+          docker compose -f docker-compose.validation.yml config --quiet
+
+      - name: Prepare isolated evidence directory
+        working-directory: dentalcad_v1.7.9_work
+        run: |
+          mkdir -p research/validation/run_logs
+          rm -f research/validation/run_logs/CAMPAIGN_STATUS.txt
+          rm -f research/validation/run_logs/strict_mode_failure.txt
+          chmod 0777 research/validation/run_logs
+
+      - name: Build validation image
+        working-directory: dentalcad_v1.7.9_work
+        run: |
+          docker compose \
+            -f docker-compose.validation.yml \
+            build --no-cache r12-campaign
+
+      - name: Execute strict synthetic campaign
+        working-directory: dentalcad_v1.7.9_work
+        run: |
+          docker compose \
+            -f docker-compose.validation.yml \
+            up --abort-on-container-exit \
+            --exit-code-from r12-campaign r12-campaign
+
+      - name: Require explicit strict PASS
+        if: always()
+        run: |
+          STATUS="dentalcad_v1.7.9_work/research/validation/run_logs/CAMPAIGN_STATUS.txt"
+          test -f "$STATUS"
+          test "$(tr -d '\r\n' < "$STATUS")" = "R12_STRICT_CAMPAIGN_PASS"
+
+      - name: Upload validation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dentalcad-r12-strict-validation-evidence
+          path: dentalcad_v1.7.9_work/research/validation/run_logs/
+          if-no-files-found: warn
+
+      - name: Stop temporary containers
+        working-directory: dentalcad_v1.7.9_work
+        if: always()
+        run: |
+          docker compose \
+            -f docker-compose.validation.yml \
+            down --volumes --remove-orphans

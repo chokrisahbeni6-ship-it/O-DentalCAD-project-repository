@@ -21,7 +21,7 @@ if python -c 'import SimpleITK, pydicom, bcrypt, jose, redis' >/dev/null 2>&1; t
   fi
 else
   echo 'SKIPPED: production dependencies missing (requires SimpleITK, pydicom, bcrypt, python-jose, redis)' > research/validation/run_logs/production_dependencies.txt
-  if [[ "${REQUIRE_PRODUCTION_TESTS:-0}" == "1" ]]; then
+  if [[ "${REQUIRE_PRODUCTION_TESTS:-1}" == "1" ]]; then
     echo 'ERROR: REQUIRE_PRODUCTION_TESTS=1 but production dependencies are missing.' | tee research/validation/run_logs/strict_mode_failure.txt
     status=1
   fi

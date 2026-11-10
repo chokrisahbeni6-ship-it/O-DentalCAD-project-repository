@@ -32,7 +32,7 @@ jobs:
           mkdir -p research/validation/run_logs
           rm -f research/validation/run_logs/CAMPAIGN_STATUS.txt
           rm -f research/validation/run_logs/strict_mode_failure.txt
-          chmod 0777 research/validation/run_logs
+          chmod -R 0777 research/validation/run_logs
 
       - name: Build validation image
         working-directory: dentalcad_v1.7.9_work

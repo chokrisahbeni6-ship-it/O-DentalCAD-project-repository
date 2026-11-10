@@ -1,0 +1,16 @@
+{
+  "seed": 20261017,
+  "scenario": "asymmetric cloud; known rigid transform; Gaussian target noise sigma=0.03 mm; 180 uniform target outliers; production ICP trim=0.8",
+  "n_points_source": 1200,
+  "n_points_target_including_outliers": 1380,
+  "target_outliers": 180,
+  "trim": 0.8,
+  "translation_error_mm": 0.0038267454003427983,
+  "rotation_error_deg": 0.00960832394216423,
+  "TRE_mean_mm": 0.004157482475563527,
+  "TRE_p95_mm": 0.006116997698535036,
+  "TRE_max_mm": 0.0072977640175252495,
+  "rotation_determinant": 0.9999999999999989,
+  "orthogonality_frobenius_error": 4.1496582111967225e-15,
+  "note": "Utilise _kabsch/_icp de production; sc\u00e9nario synth\u00e9tique uniquement, ne d\u00e9montre pas la pr\u00e9cision clinique."
+}

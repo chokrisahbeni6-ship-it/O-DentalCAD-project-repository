@@ -1,0 +1,16 @@
+INSTALLATION SIMPLEITK — DENTALCAD v1.7.9
+
+Windows :
+1. Extrayez toute l'archive dans un dossier.
+2. Double-cliquez sur INSTALLER_SIMPLEITK_LOCAL.bat.
+3. Gardez une connexion Internet pendant l'installation.
+4. Le script affiche la version si l'installation reussit.
+
+Important : ce script installe SimpleITK dans le Python local de Windows.
+Le backend DentalCAD lance avec Docker utilise son propre environnement :
+SimpleITK y est deja declare dans backend/requirements.txt et sera installe
+lors de la construction de l'image Docker (docker compose up -d --build).
+
+Le benchmark mesh de production utilise aussi VTK. Pour l'executer localement,
+il faut que VTK soit installe dans le meme environnement Python.
+Ce test est synthetique et ne constitue pas une validation clinique.

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DentalCAD v1.7.9 — LABORATOIRE / NON CLINIQUE</title>
+<style>
+ body{font:15px system-ui,sans-serif;max-width:880px;margin:20px auto;padding:0 14px;color:#1a1a1a}
+ h1{font-size:20px} h2{font-size:16px;margin:0 0 8px}
+ section{border:1px solid #ccc;border-radius:8px;padding:12px;margin:12px 0}
+ .warn{background:#fff3cd;border:1px solid #e0c36a;padding:8px;border-radius:6px}
+ input,textarea,button{font:inherit;padding:5px;margin:3px 0}
+ input[type=text],input[type=password],textarea{width:100%;box-sizing:border-box}
+ button{cursor:pointer} pre{background:#f4f4f4;padding:8px;overflow:auto;max-height:260px}
+ .ok{color:#0a7a2f}.ko{color:#b00020}
+ .lab-banner{background:#7f1d1d;color:#fff;border:3px solid #450a0a;padding:14px 16px;border-radius:8px;margin:12px 0;font-weight:800;letter-spacing:.04em}
+ .lab-banner p{margin:6px 0 0;font-weight:500;letter-spacing:normal}
+</style></head><body>
+<h1>DentalCAD v1.7.9 — banc de test</h1>
+<div class="lab-banner" role="alert">LABORATOIRE — USAGE EXCLUSIVEMENT NON CLINIQUE<p>Outil expérimental de recherche et de développement. Ne pas utiliser pour le diagnostic, la planification d’un acte sur un patient, la fabrication d’un dispositif destiné à un patient ou une décision thérapeutique. Privilégier les fantômes et données synthétiques.</p></div>
+<p class="warn"><b>Statut expérimental.</b> Les résultats sont limités aux scénarios effectivement testés et ne constituent ni une validation clinique ni une certification réglementaire.</p>
+<p id="status">Serveur : …</p>
+
+<section><h2>1. Connexion</h2>
+ <input id="email" type="text" placeholder="Email"><input id="pw" type="password" placeholder="Mot de passe">
+ <button data-handler-login="true">Se connecter</button> <span id="who"></span></section>
+
+<section><h2>2. Patient et cas</h2>
+ <input id="ext" type="text" placeholder="Identifiant patient (ex. TEST-0001)">
+ <input id="fn" type="text" placeholder="Prénom"><input id="ln" type="text" placeholder="Nom">
+ <input id="cn" type="text" placeholder="Numéro de cas (ex. CAS-001)">
+ <button data-handler-createCase="true">Créer patient + cas</button> <div>Cas : <code id="caseId">—</code></div></section>
+
+<section><h2>3. Segmentation de l'os (CBCT)</h2>
+ <input id="segFiles" type="file" multiple> Seuil : <input id="thr" type="text" value="300" style="width:70px">
+ <button data-handler-segment="true">Segmenter</button><br>
+ <small>Facultatif : séparer les mâchoires à la coupe axiale n° <input id="splitZ" type="text" style="width:60px" placeholder="ex. 200">
+ (le numéro se lit dans le visualiseur, section 7, plan axial). Sans valeur, l'os reste en un seul bloc.</small></section>
+
+<section><h2>4. Calage scan de surface ↔ CBCT</h2>
+ CBCT : <input id="regFiles" type="file" multiple><br>STL : <input id="regStl" type="file" accept=".stl">
+ <button data-handler-registerIcp="true">Caler</button></section>
+
+<section><h2>5. Plan d'implants</h2>
+ <textarea id="plan" rows="6">[{"system_id":"TEST","diameter":4.0,"length":10,"position":[-10,15.5,6]},
+ {"system_id":"TEST","diameter":4.0,"length":10,"position":[-4,16.8,6]}]</textarea>
+ <div><small>Chaque implant : <code>system_id</code> (obligatoire, voir la bibliothèque), <code>diameter</code>, <code>length</code>,
+ <code>position</code> (point sur l'axe, en mm) et, facultatif, <code>axis</code> : direction vers l'apex, par exemple <code>[0.2,0,-1]</code>
+ (inclinaison maximale 35° par rapport à la verticale ; par défaut <code>[0,0,-1]</code>).
+ Facultatif : <code>tooth</code> = dent prévue, par exemple <code>{"fdi":"36","center":[x,y,z],"axis":[0,0,-1]}</code>
+ (centre de la couronne et son axe vers la racine). Sans <code>axis</code> sur l'implant, l'axe de la dent est repris.
+ Après l'enregistrement, lisez le <b>rapport de test</b> (écarts entre implants, écart avec la dent). Ces mesures sont expérimentales et non destinées à un cas clinique.</small>
+ <button data-handler-showLib="true">Voir la bibliothèque d'implants</button></div>
+ <button data-handler-savePlan="true">Enregistrer (nouvelle version)</button>
+ Version : <input id="ver" type="text" style="width:60px">
+ <button data-handler-validatePlan="true">Marquer comme validé pour test</button></section>
+
+<section><h2>6. Guide (version de test)</h2>
+ STL gencive : <input id="gumStl" type="file" accept=".stl">
+ <button data-handler-makeGuide="true">Générer le guide</button> <span id="dl"></span></section>
+
+<section><h2>7. Visualiseur de coupes (lecture seule)</h2>
+ Examen CBCT : <input id="vFiles" type="file" multiple>
+ <button data-handler-vPrepare="true">Charger l'examen</button>
+ <button data-handler-vDelete="true">Effacer l'examen du serveur</button>
+ <div id="vCtl" style="display:none">
+  Plan : <select id="vPlane" data-handler-vPlaneChange="true"><option value="axial">axial</option><option value="coronal">coronal</option><option value="sagittal">sagittal</option></select>
+  Coupe : <input id="vIdx" type="range" min="0" max="0" value="0" style="width:55%" data-handler-vDraw="true"> <span id="vIdxTxt"></span><br>
+  Seuil bas (jaune) : <input id="vLow" type="text" value="300" style="width:70px" data-handler-vDraw="true">
+  Seuil haut (rouge) : <input id="vHigh" type="text" value="500" style="width:70px" data-handler-vDraw="true">
+  <div><small>Rouge : valeurs au-dessus du seuil haut. Jaune : entre seuil bas et seuil haut. Gris : le reste.</small></div>
+  <div><b>Règle :</b> cliquez deux points sur la coupe pour mesurer la distance (dans le plan de la coupe).
+   <button data-handler-vRulerReset="true">Effacer la mesure</button> <span id="vRuler">—</span></div>
+  <div style="position:relative;display:inline-block;max-width:100%">
+   <img id="vImg" alt="coupe" style="max-width:100%;border:1px solid #888;background:#000;cursor:crosshair;display:block">
+   <canvas id="vCv" style="position:absolute;left:1px;top:1px;pointer-events:none"></canvas>
+  </div>
+  <div><small>Mesure indicative sur une seule coupe, précision limitée par le pixel (environ 0,3 mm) et par votre pointage.
+  Elle ne remplace pas la mesure dans un logiciel certifié. Le nerf alvéolaire inférieur et le sinus ne sont pas détectés
+  automatiquement : c'est à vous de les repérer.</small></div>
+ </div></section>
+
+<h2>Résultat</h2><pre id="out">—</pre>
+<script src="/app.js" defer></script></body></html>

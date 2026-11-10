@@ -1,0 +1,14 @@
+{
+  "_notice": "Cette bibliotheque ne contient AUCUNE donnee de fabricant. Pour un systeme reel, copiez les dimensions depuis le catalogue officiel du fabricant, mettez verified=true et indiquez la reference exacte du document dans source. Option : 'combinations' [[diametre, longueur], ...] si toutes les combinaisons n'existent pas.",
+  "systems": [
+    {
+      "id": "TEST",
+      "name": "Systeme de test (valeurs generiques)",
+      "manufacturer": "aucun",
+      "verified": false,
+      "source": "valeurs de test choisies par le developpeur, non issues d'un catalogue fabricant",
+      "diameters_mm": [3.0, 3.3, 3.5, 3.75, 4.0, 4.1, 4.3, 4.5, 5.0, 5.5, 6.0],
+      "lengths_mm": [6, 7, 8, 8.5, 9, 10, 11, 11.5, 12, 13, 14, 15, 16]
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+# Version control and Python cache
+.git
+**/__pycache__/
+**/*.py[cod]
+.pytest_cache/
+# Local databases, backups, clinical data and generated results
+backups/
+**/backups/
+*.dump
+*.sql
+*.sqlite
+*.sqlite3
+**/data/
+**/results/
+**/dicom/
+**/DICOM/
+**/*.dcm
+
+# Additional defense-in-depth: credentials, local artifacts, real imaging and meshes
+.env*
+!.env.example
+**/*secret*
+**/*credential*
+**/*token*
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
+**/*.db
+**/*.dump
+**/*.sql
+**/*.sqlite*
+**/backup*/**
+**/patient*/**
+**/DICOM/**
+**/dicom/**
+**/*.dcm
+**/*.dicom
+**/*.ima
+**/*.nii
+**/*.nii.gz
+**/*.nrrd
+**/*.mha
+**/*.mhd
+**/*.stl
+**/*.obj
+**/*.ply
+**/*.vtk
+**/*.vtp
+**/*.zip
+**/*.tar
+**/*.tar.gz
+research/validation/run_logs/**

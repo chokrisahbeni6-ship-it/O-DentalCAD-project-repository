@@ -1,0 +1,6 @@
+NOT VALIDATED: partial local synthetic tests only.
+Docker/Podman unavailable.
+Production dependencies missing: SimpleITK, pydicom, redis, bcrypt, jose.
+API integration test collection failed due to missing bcrypt.
+DICOM roundtrip and full pipeline tests skipped due to missing DICOM dependencies.
+Do not claim production pipeline validation.

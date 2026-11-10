@@ -1,0 +1,136 @@
+{
+  "test": "DentalCAD production _icp/_kabsch stress matrix",
+  "seed": 20261018,
+  "points_source": 1200,
+  "criteria": {
+    "translation_error_mm_lt": 0.15,
+    "rotation_error_deg_lt": 0.2,
+    "TRE_p95_mm_lt": 0.15
+  },
+  "cases": [
+    {
+      "noise_sigma_mm": 0.0,
+      "outlier_fraction": 0.0,
+      "n_outliers": 0,
+      "trim": 0.95,
+      "translation_error_mm": 1.4162199163704847e-14,
+      "rotation_error_deg": 0.0,
+      "TRE_mean_mm": 4.602020570568952e-14,
+      "TRE_p95_mm": 7.679970589215598e-14,
+      "TRE_max_mm": 9.971755968890762e-14,
+      "det_rotation": 0.9999999999999998,
+      "passed_numerical_limits": true
+    },
+    {
+      "noise_sigma_mm": 0.0,
+      "outlier_fraction": 0.15,
+      "n_outliers": 180,
+      "trim": 0.7999999999999999,
+      "translation_error_mm": 4.9848890172662694e-15,
+      "rotation_error_deg": 0.0,
+      "TRE_mean_mm": 1.394495161390631e-14,
+      "TRE_p95_mm": 2.6646092534204124e-14,
+      "TRE_max_mm": 3.860256791927826e-14,
+      "det_rotation": 1.0000000000000007,
+      "passed_numerical_limits": true
+    },
+    {
+      "noise_sigma_mm": 0.0,
+      "outlier_fraction": 0.3,
+      "n_outliers": 360,
+      "trim": 0.7,
+      "translation_error_mm": 1.0576877475023275e-14,
+      "rotation_error_deg": 3.818191820832846e-06,
+      "TRE_mean_mm": 2.634424953223674e-14,
+      "TRE_p95_mm": 4.5255718258069587e-14,
+      "TRE_max_mm": 6.168845116215968e-14,
+      "det_rotation": 0.9999999999999953,
+      "passed_numerical_limits": true
+    },
+    {
+      "noise_sigma_mm": 0.03,
+      "outlier_fraction": 0.0,
+      "n_outliers": 0,
+      "trim": 0.95,
+      "translation_error_mm": 0.0008124795617214994,
+      "rotation_error_deg": 0.012227624216547647,
+      "TRE_mean_mm": 0.00221842842969004,
+      "TRE_p95_mm": 0.0035282947759426183,
+      "TRE_max_mm": 0.004537551037444952,
+      "det_rotation": 0.999999999999997,
+      "passed_numerical_limits": true
+    },
+    {
+      "noise_sigma_mm": 0.03,
+      "outlier_fraction": 0.15,
+      "n_outliers": 180,
+      "trim": 0.7999999999999999,
+      "translation_error_mm": 0.0015222755161741692,
+      "rotation_error_deg": 0.011546966987281611,
+      "TRE_mean_mm": 0.0027579861128416883,
+      "TRE_p95_mm": 0.004556083257900869,
+      "TRE_max_mm": 0.005909161583666347,
+      "det_rotation": 1.0000000000000004,
+      "passed_numerical_limits": true
+    },
+    {
+      "noise_sigma_mm": 0.03,
+      "outlier_fraction": 0.3,
+      "n_outliers": 360,
+      "trim": 0.7,
+      "translation_error_mm": 0.0027898144445642485,
+      "rotation_error_deg": 0.009275228017118794,
+      "TRE_mean_mm": 0.0033690494983178707,
+      "TRE_p95_mm": 0.004921152762985777,
+      "TRE_max_mm": 0.005927997927611048,
+      "det_rotation": 0.999999999999998,
+      "passed_numerical_limits": true
+    },
+    {
+      "noise_sigma_mm": 0.1,
+      "outlier_fraction": 0.0,
+      "n_outliers": 0,
+      "trim": 0.95,
+      "translation_error_mm": 0.0015911498004964253,
+      "rotation_error_deg": 0.02752912746764667,
+      "TRE_mean_mm": 0.005562454011415345,
+      "TRE_p95_mm": 0.009721108236838033,
+      "TRE_max_mm": 0.012766098708363082,
+      "det_rotation": 1.0000000000000049,
+      "passed_numerical_limits": true
+    },
+    {
+      "noise_sigma_mm": 0.1,
+      "outlier_fraction": 0.15,
+      "n_outliers": 180,
+      "trim": 0.7999999999999999,
+      "translation_error_mm": 0.006384711709499619,
+      "rotation_error_deg": 0.011579374083272148,
+      "TRE_mean_mm": 0.006999169036944932,
+      "TRE_p95_mm": 0.008918029993152688,
+      "TRE_max_mm": 0.009881812441101541,
+      "det_rotation": 1.0000000000000009,
+      "passed_numerical_limits": true
+    },
+    {
+      "noise_sigma_mm": 0.1,
+      "outlier_fraction": 0.3,
+      "n_outliers": 360,
+      "trim": 0.7,
+      "translation_error_mm": 0.006735579385190618,
+      "rotation_error_deg": 0.06186520090834481,
+      "TRE_mean_mm": 0.012625333623575787,
+      "TRE_p95_mm": 0.02237861056672974,
+      "TRE_max_mm": 0.027111573550534507,
+      "det_rotation": 1.0000000000000007,
+      "passed_numerical_limits": true
+    }
+  ],
+  "passed_cases": 9,
+  "total_cases": 9,
+  "limitations": [
+    "Synthetic point clouds only; no DICOM image registration.",
+    "Does not call full register_points because SimpleITK is unavailable in this runtime.",
+    "Thresholds are engineering test criteria for this benchmark, not clinical acceptance criteria."
+  ]
+}

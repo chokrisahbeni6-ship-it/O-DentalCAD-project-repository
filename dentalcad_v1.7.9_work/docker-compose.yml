@@ -1,0 +1,96 @@
+name: dentalcad
+
+services:
+  redis:
+    image: redis:7.2-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec", "--maxmemory-policy", "noeviction"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: dentalcad
+      POSTGRES_USER: dentalcad
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Renseignez POSTGRES_PASSWORD dans .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # AUCUN port publié : seule l'application peut parler à la base.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dentalcad"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  orthanc:
+    # Version figée pour des déploiements reproductibles; mise à jour contrôlée.
+    image: orthancteam/orthanc:24.8.2
+    restart: unless-stopped
+    environment:
+      ORTHANC__AUTHENTICATION_ENABLED: "true"
+      ORTHANC__REGISTERED_USERS: '{"dentalcad":"${ORTHANC_PASSWORD:?Renseignez ORTHANC_PASSWORD dans .env}"}'
+      # Utilisé par le healthcheck; la variable doit exister dans le conteneur.
+      ORTHANC_PASSWORD: ${ORTHANC_PASSWORD:?Renseignez ORTHANC_PASSWORD dans .env}
+    volumes:
+      - orthanc_data:/var/lib/orthanc/db
+    # AUCUN port publié (ni 8042 ni 4242).
+    healthcheck:
+      test: ["CMD", "sh", "-c", "wget -q -O /dev/null --user=dentalcad --password=$$ORTHANC_PASSWORD http://127.0.0.1:8042/system"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      orthanc:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8010:8000"   # accessible uniquement depuis ce PC
+    environment:
+      DATABASE_URL: postgresql://dentalcad:${POSTGRES_PASSWORD}@postgres:5432/dentalcad
+      ORTHANC_URL: http://orthanc:8042
+      ORTHANC_USER: dentalcad
+      ORTHANC_PASSWORD: ${ORTHANC_PASSWORD}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:?Renseignez JWT_SECRET_KEY dans .env}
+      REDIS_URL: redis://redis:6379/0
+      AUDIT_HMAC_KEY: ${AUDIT_HMAC_KEY:?Renseignez AUDIT_HMAC_KEY dans .env}
+      RATE_LIMIT_FAIL_CLOSED: "1"
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+      REG_MAX_RMS_MM: ${REG_MAX_RMS_MM:-0.5}
+      REG_MAX_SPREAD_MM: ${REG_MAX_SPREAD_MM:-0.3}
+      RESULTS_RETENTION_DAYS: ${RESULTS_RETENTION_DAYS:-7}
+    volumes:
+      - results_data:/data/results
+
+  frontend:
+    image: nginx:alpine
+    restart: unless-stopped
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "127.0.0.1:5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  redis_data:
+  postgres_data:
+  orthanc_data:
+  results_data:

@@ -1,0 +1,32 @@
+{
+  "seed": 20261018,
+  "reference": "analytic sphere radius 10 mm sampled on anisotropic 0.4x0.5x0.6 mm grid",
+  "mesh_points": 3861,
+  "mesh_triangles": 7718,
+  "spacing_xyz_mm": [
+    0.4,
+    0.5,
+    0.6
+  ],
+  "direction_matrix_determinant": 1.0,
+  "centroid_error_mm": 0.007976360449078543,
+  "radial_absolute_error_mean_mm": 0.09913835644544336,
+  "radial_absolute_error_p95_mm": 0.1319137423477823,
+  "radial_absolute_error_max_mm": 0.1745010012266892,
+  "radial_signed_error_mean_mm": -0.09913835644544336,
+  "physical_bounds_mm": [
+    [
+      28.482751846313477,
+      48.30499267578125
+    ],
+    [
+      -4.056946277618408,
+      15.752568244934082
+    ],
+    [
+      28.163734436035156,
+      47.898033142089844
+    ]
+  ],
+  "note": "Approximate synthetic pipeline test (SciPy smoothing; production exporter not directly executed because SimpleITK is unavailable). Not clinical validation. Voxelization and 1-mm smoothing contribute to error."
+}

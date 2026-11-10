@@ -1,0 +1,36 @@
+# Test-only stack. It does not start or modify the DentalCAD application database.
+services:
+  redis-validation:
+    image: redis:7.2-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+    networks: [validation]
+
+  r12-campaign:
+    build:
+      context: .
+      dockerfile: Dockerfile.validation
+    environment:
+      REDIS_URL: redis://redis-validation:6379/0
+      REQUIRE_PRODUCTION_TESTS: "1"
+      # Synthetic-only tests; never point this stack at production services/data.
+      DATABASE_URL: sqlite:////tmp/dentalcad_r12_synthetic.sqlite
+      DENTALCAD_RESEARCH_ONLY: "1"
+      RESULTS_DIR: /tmp/dentalcad-r12-results
+      AUDIT_HMAC_KEY: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+      JWT_SECRET_KEY: "synthetic-test-only-key-do-not-use-in-production"
+    depends_on:
+      redis-validation:
+        condition: service_healthy
+    volumes:
+      - ./research/validation/run_logs:/workspace/research/validation/run_logs
+    networks: [validation]
+    restart: "no"
+
+networks:
+  validation:
+    internal: true

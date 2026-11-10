@@ -1,0 +1,23 @@
+# Isolated, reproducible R12 synthetic validation environment.
+# Python 3.11 is chosen to match the pinned NumPy/SimpleITK/VTK wheel ecosystem.
+FROM python:3.11-slim-bookworm
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PYTHONPATH=/workspace/backend
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      build-essential libgl1 libglib2.0-0 libxrender1 curl bash \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /workspace
+COPY requirements-validation.txt ./requirements-validation.txt
+COPY backend/requirements.txt ./backend/requirements.txt
+RUN python -m pip install --no-cache-dir -r requirements-validation.txt \
+    && python -m pip check \
+    && python -c "import bcrypt; assert bcrypt.__version__ == \"4.0.1\", f\"Unexpected bcrypt version: {bcrypt.__version__}\"; print(f\"bcrypt {bcrypt.__version__} OK\")"
+COPY . /workspace
+RUN chmod +x research/validation/run_synthetic_campaign.sh \
+    && mkdir -p research/validation/run_logs \
+    && useradd --create-home --uid 10001 validator \
+    && chown -R validator:validator /workspace
+USER validator
+CMD ["bash", "research/validation/run_validation_entrypoint.sh"]

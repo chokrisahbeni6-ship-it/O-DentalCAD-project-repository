@@ -1,0 +1,20 @@
+
+==================================== ERRORS ====================================
+________ ERROR collecting backend/tests/test_api_upload_integration.py _________
+ImportError while importing test module '/mnt/data/dentalcad_r12_realtest/dentalcad_v1.7.9_work/backend/tests/test_api_upload_integration.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/tests/test_api_upload_integration.py:4: in <module>
+    from app import main
+backend/app/main.py:29: in <module>
+    from app.auth import (check_password_strength, create_access_token,
+backend/app/auth.py:5: in <module>
+    import bcrypt
+E   ModuleNotFoundError: No module named 'bcrypt'
+=========================== short test summary info ============================
+ERROR backend/tests/test_api_upload_integration.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 1.52s

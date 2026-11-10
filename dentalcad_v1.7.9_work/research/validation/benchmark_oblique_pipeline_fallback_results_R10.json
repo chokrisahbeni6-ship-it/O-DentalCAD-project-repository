@@ -1,0 +1,52 @@
+{
+  "test": "fallback oblique phantom -> scipy resampling -> VTK marching cubes -> production ICP math",
+  "seed": 20261018,
+  "source_grid_size_xyz": [
+    80,
+    76,
+    64
+  ],
+  "source_spacing_mm": [
+    0.45,
+    0.55,
+    0.7
+  ],
+  "source_direction_det": 1.0,
+  "resampled_grid_size_xyz": [
+    108,
+    128,
+    121
+  ],
+  "resampled_spacing_mm": [
+    0.5,
+    0.5,
+    0.5
+  ],
+  "source_foreground_voxels": 15331,
+  "resampled_foreground_voxels": 21227,
+  "mesh_points": 5928,
+  "mesh_triangles": 11852,
+  "surface_to_source_boundary_nearest_mean_mm": 0.35877288427162013,
+  "surface_to_source_boundary_nearest_p95_mm": 0.5214605879761968,
+  "surface_to_source_boundary_nearest_max_mm": 0.6534741389018188,
+  "source_foreground_nearest_voxel_coverage": 0.9889113560759246,
+  "registration_translation_error_mm": 1.2492826208638852e-13,
+  "registration_rotation_error_deg": 0.0,
+  "registration_tre_mean_mm": 7.848982686489919e-14,
+  "registration_tre_p95_mm": 8.609376902805817e-14,
+  "registration_tre_max_mm": 9.313600009561419e-14,
+  "limits": {
+    "translation_error_mm_lt": 0.2,
+    "rotation_error_deg_lt": 0.5,
+    "tre_p95_mm_lt": 0.3,
+    "coverage_gt": 0.9
+  },
+  "pass": true,
+  "limitations": [
+    "This is a fallback synthetic geometry test, not a DICOM file round-trip.",
+    "Uses SciPy interpolation, not SimpleITK Resample.",
+    "Uses VTK marching cubes directly, not DentalCAD _export_mask_to_stl.",
+    "ICP uses DentalCAD production _icp/_kabsch but bypasses production register_points, which imports SimpleITK.",
+    "No clinical validity is implied."
+  ]
+}

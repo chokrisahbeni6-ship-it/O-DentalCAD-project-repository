@@ -2,12 +2,19 @@
 Requires pydicom and SimpleITK. It is intentionally skipped if dependencies are absent.
 """
 import numpy as np
+from _dicom_ds import format_ds
 import pytest
 
 pydicom = pytest.importorskip("pydicom", reason="pydicom required for synthetic DICOM generation")
 sitk = pytest.importorskip("SimpleITK", reason="SimpleITK required for production pipeline")
 from pydicom.dataset import FileDataset, FileMetaDataset
 from pydicom.uid import ExplicitVRLittleEndian, CTImageStorage, generate_uid
+from pydicom.valuerep import DSfloat
+
+
+def _ds_values(values):
+    """Format DICOM DS values within the 16-character limit."""
+    return [DSfloat(float(v), auto_format=True) for v in values]
 
 
 def _rotation():
@@ -33,10 +40,10 @@ def _write_oblique_dicom_phantom(folder):
         ds.PatientName="SYNTHETIC^PHANTOM"; ds.PatientID="SYNTHETIC_ONLY"
         ds.Rows=rows; ds.Columns=cols; ds.SamplesPerPixel=1; ds.PhotometricInterpretation="MONOCHROME2"
         ds.BitsAllocated=16; ds.BitsStored=16; ds.HighBit=15; ds.PixelRepresentation=1
-        ds.PixelSpacing=[str(spacing[1]), str(spacing[0])]
-        ds.SliceThickness=str(spacing[2]); ds.SpacingBetweenSlices=str(spacing[2])
-        ds.ImageOrientationPatient=[str(v) for v in np.r_[D[:,0],D[:,1]]]
-        ds.ImagePositionPatient=[str(v) for v in origin + D[:,2]*spacing[2]*k]
+        ds.PixelSpacing=[format_ds(spacing[1]), format_ds(spacing[0])]
+        ds.SliceThickness=DSfloat(float(spacing[2]), auto_format=True); ds.SpacingBetweenSlices=DSfloat(float(spacing[2]), auto_format=True)
+        ds.ImageOrientationPatient=[format_ds(v) for v in np.r_[D[:,0],D[:,1]]]
+        ds.ImagePositionPatient=[format_ds(v) for v in origin + D[:,2]*spacing[2]*k]
         ds.InstanceNumber=k+1; ds.RescaleIntercept=0; ds.RescaleSlope=1
         image=np.full((rows,cols),-1000,dtype=np.int16)
         # Asymmetric union: ellipsoid + off-axis protrusion to reduce rotational ambiguity.

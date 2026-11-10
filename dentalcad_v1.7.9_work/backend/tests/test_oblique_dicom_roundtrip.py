@@ -4,12 +4,19 @@ import uuid
 from pathlib import Path
 
 import numpy as np
+from _dicom_ds import format_ds
 import pytest
 
 pydicom = pytest.importorskip("pydicom", reason="pydicom required for real DICOM round-trip")
 sitk = pytest.importorskip("SimpleITK", reason="SimpleITK required for production DICOM reader")
 from pydicom.dataset import FileDataset, FileMetaDataset
 from pydicom.uid import ExplicitVRLittleEndian, CTImageStorage, generate_uid
+from pydicom.valuerep import DSfloat
+
+
+def _ds_values(values):
+    """Format DICOM DS values within the 16-character limit."""
+    return [DSfloat(float(v), auto_format=True) for v in values]
 
 
 def rotation_xyz(deg=(11.0, -7.0, 17.0)):
@@ -42,11 +49,11 @@ def test_real_oblique_dicom_roundtrip_through_dentalcad_reader(tmp_path):
         ds.Rows = rows; ds.Columns = cols; ds.SamplesPerPixel = 1
         ds.PhotometricInterpretation = "MONOCHROME2"; ds.BitsAllocated = 16; ds.BitsStored = 16
         ds.HighBit = 15; ds.PixelRepresentation = 1
-        ds.PixelSpacing = [str(spacing_xyz[1]), str(spacing_xyz[0])]
-        ds.SliceThickness = str(spacing_xyz[2]); ds.SpacingBetweenSlices = str(spacing_xyz[2])
-        ds.ImageOrientationPatient = [str(v) for v in np.r_[xdir, ydir]]
+        ds.PixelSpacing = [format_ds(spacing_xyz[1]), format_ds(spacing_xyz[0])]
+        ds.SliceThickness = format_ds(spacing_xyz[2]); ds.SpacingBetweenSlices = format_ds(spacing_xyz[2])
+        ds.ImageOrientationPatient = [format_ds(v) for v in np.r_[xdir, ydir]]
         ipp = origin + zdir * spacing_xyz[2] * k
-        ds.ImagePositionPatient = [str(v) for v in ipp]
+        ds.ImagePositionPatient = [format_ds(v) for v in ipp]
         ds.InstanceNumber = k + 1
         # Deterministic asymmetric intensity object; no patient data.
         image = np.full((rows, cols), -1000, dtype=np.int16)

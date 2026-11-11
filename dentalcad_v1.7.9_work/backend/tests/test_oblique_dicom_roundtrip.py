@@ -1,23 +1,16 @@
 """Real synthetic DICOM oblique-series round-trip. Requires pydicom + SimpleITK."""
-import math
 import uuid
 from pathlib import Path
 
 import numpy as np
-from _dicom_ds import format_ds
 import pytest
 
 pydicom = pytest.importorskip("pydicom", reason="pydicom required for real DICOM round-trip")
 sitk = pytest.importorskip("SimpleITK", reason="SimpleITK required for production DICOM reader")
 from pydicom.dataset import FileDataset, FileMetaDataset
 from pydicom.uid import ExplicitVRLittleEndian, CTImageStorage, generate_uid
-from pydicom.valuerep import DSfloat
 
-
-def _ds_values(values):
-    """Format DICOM DS values within the 16-character limit."""
-    return [DSfloat(float(v), auto_format=True) for v in values]
-
+from _dicom_ds import format_ds
 
 def rotation_xyz(deg=(11.0, -7.0, 17.0)):
     ax, ay, az = np.radians(deg)
